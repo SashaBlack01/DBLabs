@@ -12,9 +12,11 @@ class Controller:
         while True:
             choice = self.view.show_menu()
 
-            if choice == '5':
+            if choice == '7':
                 break
-            elif choice in ['1', '2', '3', '4']:
+            if choice == '6':
+                self.process_search_option()
+            elif choice in ['1', '2', '3', '4', '5']:
                 self.process_menu_choice(choice)
             else:
                 self.view.show_message("Wrong choice. Try again.")
@@ -23,13 +25,18 @@ class Controller:
         while True:
             table = self.view.show_tables()
 
+            if table == '6':
+                break
+
             if choice == '1':
                 self.process_add_option(table)
             elif choice == '2':
-                self.process_view_option(table)
+                self.process_add_random_option(table)
             elif choice == '3':
-                self.process_update_option(table)
+                self.process_view_option(table)
             elif choice == '4':
+                self.process_update_option(table)
+            elif choice == '5':
                 self.process_delete_option(table)
 
     def process_add_option(self, table):
@@ -51,6 +58,13 @@ class Controller:
         elif table == '6':
             self.view.show_message("\nAdding courier-warehouse:")
             self.add_courier_warehouse()
+        else:
+            self.view.show_message("Wrong choice. Try again.")
+
+    def process_add_random_option(self, table):
+        if table == '5':
+            self.view.show_message("\nAdding random warehouses:")
+            self.add_random_fields()
         else:
             self.view.show_message("Wrong choice. Try again.")
 
@@ -116,10 +130,34 @@ class Controller:
         else:
             self.view.show_message("Wrong choice. Try again.")
 
+    def process_search_option(self):
+        option = self.view.show_search()
+
+        if option == '1':
+            start_time = time.time()
+            self.show_couriers_with_warehouses()
+            end_time = time.time()
+            elapsed_time = (end_time - start_time) * 1000
+            print(f"Час виконання: {elapsed_time:.2f} мс")
+        elif option == '2':
+            start_time = time.time()
+            self.show_delivered_parcels()
+            end_time = time.time()
+            elapsed_time = (end_time - start_time) * 1000
+            print(f"Час виконання: {elapsed_time:.2f} мс")
+        elif option == '3':
+            start_time = time.time()
+            self.show_parcels_in_warehouses()
+            end_time = time.time()
+            elapsed_time = (end_time - start_time) * 1000
+            print(f"Час виконання: {elapsed_time:.2f} мс")
+        else:
+            self.view.show_menu()
+
     def add_recipient(self):
         try:
             name, address = self.view.get_recipient_input()
-            self.model.insert_recipient(name, address)
+            self.model.add_recipient(name, address)
             self.view.show_message("Recipient added successfully!")
         except Exception as e:
             self.view.show_message(f"Something went wrong: {e}")
@@ -127,7 +165,7 @@ class Controller:
     def add_sender(self):
         try:
             name, address = self.view.get_sender_input()
-            self.model.insert_sender(name, address)
+            self.model.add_sender(name, address)
             self.view.show_message("Sender added successfully!")
         except Exception as e:
             self.view.show_message(f"Something went wrong: {e}")
@@ -135,7 +173,7 @@ class Controller:
     def add_parcel(self):
         try:
             status, creation_date, parcel_cost, courier_id, recipient_id, warehouse_id = self.view.get_parcel_input()
-            self.model.insert_parcel(status, creation_date, parcel_cost, courier_id, recipient_id, warehouse_id)
+            self.model.add_parcel(status, creation_date, parcel_cost, courier_id, recipient_id, warehouse_id)
             self.view.show_message("Parcel added successfully!")
         except Exception as e:
             self.view.show_message(f"Something went wrong: {e}")
@@ -143,7 +181,7 @@ class Controller:
     def add_courier(self):
         try:
             name, phone = self.view.get_courier_input()
-            self.model.insert_courier(name, phone)
+            self.model.add_courier(name, phone)
             self.view.show_message("Courier added successfully!")
         except Exception as e:
             self.view.show_message(f"Something went wrong: {e}")
@@ -151,7 +189,7 @@ class Controller:
     def add_warehouse(self):
         try:
             address, phone = self.view.get_warehouse_input()
-            self.model.insert_warehouse(address, phone)
+            self.model.add_warehouse(address, phone)
             self.view.show_message("Warehouse added successfully!")
         except Exception as e:
             self.view.show_message(f"Something went wrong: {e}")
@@ -159,51 +197,71 @@ class Controller:
     def add_courier_warehouse(self):
         try:
             courier_id, warehouse_id = self.view.get_courier_warehouse_input()
-            self.model.insert_courier_warehouse(courier_id, warehouse_id)
+            self.model.add_courier_warehouse(courier_id, warehouse_id)
             self.view.show_message("Courier Warehouse added successfully!")
         except Exception as e:
             self.view.show_message(f"Something went wrong: {e}")
 
     def view_recipients(self):
         try:
-            recipients = self.model.show_recipients()
+            recipients = self.model.get_all_recipients()
             self.view.show_recipients(recipients)
         except Exception as e:
             self.view.show_message(f"Something went wrong: {e}")
 
     def view_senders(self):
         try:
-            senders = self.model.show_senders()
+            senders = self.model.get_all_senders()
             self.view.show_senders(senders)
         except Exception as e:
             self.view.show_message(f"Something went wrong: {e}")
 
     def view_parcels(self):
         try:
-            parcels = self.model.show_parcels()
+            parcels = self.model.get_all_parcels()
             self.view.show_parcels(parcels)
         except Exception as e:
             self.view.show_message(f"Something went wrong: {e}")
 
     def view_couriers(self):
         try:
-            couriers = self.model.show_couriers()
+            couriers = self.model.get_all_couriers()
             self.view.show_couriers(couriers)
         except Exception as e:
             self.view.show_message(f"Something went wrong: {e}")
 
     def view_warehouses(self):
         try:
-            warehouses = self.model.show_warehouses()
+            warehouses = self.model.get_all_warehouses()
             self.view.show_warehouses(warehouses)
         except Exception as e:
             self.view.show_message(f"Something went wrong: {e}")
 
     def view_couriers_warehouses(self):
-        print(1)
         try:
-            couriers_warehouses = self.model.show_couriers_warehouses()
+            couriers_warehouses = self.model.get_all_couriers_warehouses()
             self.view.show_couriers_warehouses(couriers_warehouses)
+        except Exception as e:
+            self.view.show_message(f"Something went wrong: {e}")
+
+    def show_couriers_with_warehouses(self):
+        try:
+            rows = self.model.get_all_couriers_with_warehouses()
+            self.view.show_couriers_with_warehouses(rows)
+        except Exception as e:
+            self.view.show_message(f"Something went wrong: {e}")
+
+    def show_delivered_parcels(self):
+        try:
+            rows = self.model.get_delivered_parcels()
+            self.view.show_delivered_parcels(rows)
+        except Exception as e:
+            self.view.show_message(f"Something went wrong: {e}")
+
+    def show_parcels_in_warehouses(self):
+        try:
+            rows = self.model.get_parcels_in_warehouses()
+            self.view.show_parcels_in_warehouses(rows)
         except Exception as e:
             self.view.show_message(f"Something went wrong: {e}")
 
@@ -306,6 +364,14 @@ class Controller:
             courier_warehouse_id = self.view.get_id()
             self.model.delete_courier_warehouse(courier_warehouse_id)
             self.view.show_message("Courier Warehouse deleted successfully!")
+        except Exception as e:
+            self.view.show_message(f"Something went wrong: {e}")
+
+    def add_random_fields(self):
+        try:
+            number = self.view.get_number()
+            self.model.add_random_fields(number)
+            self.view.show_message("Random fields added successfully!")
         except Exception as e:
             self.view.show_message(f"Something went wrong: {e}")
 

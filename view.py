@@ -5,10 +5,12 @@ class View:
     def show_menu(self):
         self.show_message("\nМеню:")
         self.show_message("1. Додати рядок")
-        self.show_message("2. Показати таблицю")
-        self.show_message("3. Редагувати рядок")
-        self.show_message("4. Видалити рядок")
-        self.show_message("5. Вихід")
+        self.show_message('2. Генерування «рандомізованих» даних (тільки для таблиці "Warehouses")')
+        self.show_message("3. Показати таблицю")
+        self.show_message("4. Редагувати рядок")
+        self.show_message("5. Видалити рядок")
+        self.show_message("6. Пошук")
+        self.show_message("7. Вихід")
         choice = input("Виберіть пункт: ")
         return choice
 
@@ -23,6 +25,15 @@ class View:
         self.show_message("7. Повернутися до меню")
         table = input("Оберіть потрібну таблицю: ")
         return table
+
+    def show_search(self):
+        self.show_message("\nПошук:")
+        self.show_message("1. Якому кур'єру відповідає який склад.")
+        self.show_message("2. Кількість посилок, які вже доставив кур'єр.")
+        self.show_message("3. Кільксть посилок, які знаходяться в кожному складі.")
+        self.show_message("4. Повернутися до меню")
+        choice = input("Обреріть щось: ")
+        return choice
 
     def show_recipients(self, recipients):
         print("\nRecipients:")
@@ -53,6 +64,21 @@ class View:
         print("\nCouriers Warehouses:")
         for courier_warehouse in couriers_warehouses:
             print(f"ID: {courier_warehouse[0]}, Courier ID: {courier_warehouse[1]}, Warehouse ID: {courier_warehouse[2]}")
+
+    def show_couriers_with_warehouses(self, rows):
+        print("\nЯкому кур'єру відповідає який склад:")
+        for row in rows:
+            print(f"Courier name: {row[0]}, Warehouse address: {row[1]}")
+
+    def show_delivered_parcels(self, rows):
+        print("\nКількість посилок, які вже доставив кур'єр:")
+        for row in rows:
+            print(f"Courier name: {row[0]}, Delivered parcels count: {row[1]}")
+
+    def show_parcels_in_warehouses(self, rows):
+        print("\nКільксть посилок, які знаходяться в кожному складі:")
+        for row in rows:
+            print(f"Warehouse address: {row[0]}, Parcels count: {row[1]}")
 
     def get_recipient_input(self):
         while True:
